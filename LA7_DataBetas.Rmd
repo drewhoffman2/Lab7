@@ -5,8 +5,8 @@ date: "10/8/2019"
 output: html_document
 ---
 ```{r}
-
 library(tidyverse)
+library(lubridate)
 Data <- read_delim(file = 'household_power_consumption.txt', delim = ';', na = c('?'), col_types = cols(
                     Date = col_date(format = "%d/%m/%Y"),
                     Time = col_time(format = "%H:%M:%S"),
@@ -208,3 +208,30 @@ pie
 ```
 
 ***Brandon's Plot***
+=======
+Brandon:
+
+Question: How is power effected on the largest holiday of the year in France, Bastille Day?
+
+We want to see this question to determine if power usage on holidays could cause a spike in somebody's power bill for the month.
+
+Answer: In two of the years, 2007 and 2010, there was less voltage used at night, while the other two years there was a spike in power usage later in the night around 8 pm. The reason for this is because the homeowner may have been out of the house celebrating Bastille Day, while the other two years, 2008 and 2009, the owner may have been hosting a party which would come with higher electricy usage. Throughout the day the power consumption stayed similar throughout the four years, but at night it varied from high to low usage.
+
+This could benefit the home owner and others that decide to host a party on that day, that it could affect one's electricity bill for the month and it helps electricity companies gauge how much power could be used on Bastille Day to make sure there are now brown or blackouts because more electricity could be used during this celebration.
+
+```{r}
+Date_separation <- Data %>% mutate(year = substr(Date,1,4), month = substr(Date,6,7), day = substr(Date,9,10))
+Bastille_Day <- Date_separation %>% filter(day == "14" & month == "07")
+
+ggplot(Data = Bastille_Day) +
+  geom_smooth(mapping = aes(x = Bastille_Day$Time, y = Bastille_Day$Voltage, color = Bastille_Day$year), se = FALSE)+
+  xlab('Hour')+
+  ylab('Voltage')+
+  ggtitle('Single Day Voltage on Bastille Day 07/14')+
+  labs(color = 'Year')
+
+```
+
+
+
+
