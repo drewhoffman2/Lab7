@@ -25,7 +25,11 @@ Data <- read_delim(file = 'household_power_consumption.txt', delim = ';', na = c
 
 Question: How does power consumption change over the course of a day?
 
-We want to answer this question 
+We want to answer this question to see if there is any part of the day that is affecting the power bill more than others.
+
+Answer: We can see that power consumption is by far the lowest during the earliest hours of the morning, and that power is consumed the most during the evening. While not a huge margin, there is a considerable difference between evening power consumption and the morning and afternoon consumption levels. 
+
+The homeowner can benefit from this analysis by considering how they are using the appliances in their house at different points in the day. If they can find a way to reduce usage of their appliances late in the day, they could lower their electric bill.
 
 ```{r}
 library(stringr)
