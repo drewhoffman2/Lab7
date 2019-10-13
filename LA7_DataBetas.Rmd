@@ -19,3 +19,89 @@ Data <- read_delim(file = 'household_power_consumption.txt', delim = ';', na = c
                   ), locale = locale())
 ```
 
+***Drew's Plot***
+
+***Tanner's Plot***
+
+***Burke's Plot***
+
+***David's Plot***
+Question: How does energy consumption change throughout the seasons regarding the water heater and air conditioner?
+
+We want to answer this question to see how different seasons could effect somebody's power bill.
+
+Answer: The water heater and air conditioner were used about the same amount in the Spring, Summer, and Fall seasons. In Winter, the weather was colder so the air conditioner was used significantly less. Therefore, the owner of the house would have payed less money on air conditioning in the winter season than the other three seasons.
+
+The house owner benfits from this analysis as it shows them that the air conditioning and water heater are used much less in winter. Hence, if they wanted to reduce their electric bill they might consider using the air conditioning less in the other three seasons.
+
+```{r}
+library(lubridate)
+library(ggplot2)
+options(stringsAsFactors = FALSE)
+
+#I only care about the water heater and air conditioner
+SubMetering3 <-
+  select(Data, "Date", "Sub_metering_3")
+
+#Getting the Sub Metering value for spring
+Spring <- 
+  filter(SubMetering3, Date >= as.Date("2006-03-01") & Date <= as.Date("2006-05-31") | Date >=   as.Date("2007-03-01") & Date <= as.Date("2007-05-31") | Date >= as.Date("2008-03-01") & Date <= as.Date("2008-05-31") | Date >= as.Date("2009-03-01") & Date <= as.Date("2009-05-31") | Date >= as.Date("2010-03-01") & Date <= as.Date("2010-05-31"))
+
+SpSM3 <-
+  sum(Spring$Sub_metering_3, na.rm = TRUE)
+
+  # SpSM3 = 3547933
+
+#Getting the Sub Metering value for summer
+Summer <-
+  filter(SubMetering3, Date >= as.Date("2006-06-01") & Date <= as.Date("2006-08-31") | Date >=   as.Date("2007-06-01") & Date <= as.Date("2007-08-31") | Date >= as.Date("2008-08-01") & Date <= as.Date("2008-08-31") | Date >= as.Date("2009-06-01") & Date <= as.Date("2009-08-31") | Date >= as.Date("2010-06-01") & Date <= as.Date("2010-08-31"))
+
+SuSM3 <-
+  sum(Summer$Sub_metering_3, na.rm = TRUE)
+
+  #SuSM3 = 1948777
+         
+#Getting the Sub Metering value for Fall
+Fall <-
+  filter(SubMetering3, Date >= as.Date("2006-09-01") & Date <= as.Date("2006-11-30") | Date >=   as.Date("2007-09-01") & Date <= as.Date("2007-11-30") | Date >= as.Date("2008-09-01") & Date <= as.Date("2008-11-30") | Date >= as.Date("2009-09-01") & Date <= as.Date("2009-11-30") | Date >= as.Date("2010-09-01") & Date <= as.Date("2010-11-30"))
+
+FaSM3 <-
+  sum(Fall$Sub_metering_3, na.rm = TRUE)
+
+  #FaSM3 = 3403153
+
+#Getting the Sub Metering value for Winter
+Winter <-
+  filter(SubMetering3, Date >= as.Date("2006-12-01") & Date <= as.Date("2007-02-28") | Date >=   as.Date("2007-12-01") & Date <= as.Date("2008-02-28") | Date >= as.Date("2008-12-01") & Date <= as.Date("2009-02-28") | Date >= as.Date("2009-12-01") & Date <= as.Date("2010-02-28") | Date >= as.Date("2010-12-01") & Date <= as.Date("2011-02-28"))
+
+WiSM3 <-
+  sum(Winter$Sub_metering_3, na.rm = TRUE)
+
+  # WiSM3 = 3809911
+
+#Create a new data frame with the values for each season
+
+Season = c("Spring", "Summer", "Fall", "Winter")
+Value = c(3547933, 1948777, 3403153, 3809911)
+
+df = data.frame(season, value)
+head(df)
+
+#Create a pie chart to compare sub metering between seasons
+bp<- ggplot(df, aes(x="", y=Value, fill=Season))+
+geom_bar(width = 1, stat = "identity")+
+  xlab('')+
+  ylab('')+
+  ggtitle("Water Heater and Air Conditioning Usage 
+(Measured in watt-hour of active energy)")
+
+pie <- bp + coord_polar("y", start=0) +
+    geom_text(aes(y = Value/2.4 + c(0, cumsum(Value)[-length(Value)]), 
+            label = (Value)), size=4.5) +
+  theme(axis.text = element_blank(),
+        axis.ticks = element_blank(),
+        panel.grid = element_blank())
+pie
+```
+
+***Brandon's Plot***
