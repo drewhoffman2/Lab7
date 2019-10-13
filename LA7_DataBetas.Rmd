@@ -21,6 +21,58 @@ Data <- read_delim(file = 'household_power_consumption.txt', delim = ';', na = c
 
 ***Drew's Plot***
 
+Question: How does power consumption from the different sub-meters vary by days of the week?
+
+We want to answer this question in order to determine if there certain days that may be more power heavy and provide opportunity to cut down on usage. By separating into submeters, it allows us to have a better idea of which appliances are contributing to the differences in the days.
+
+I came up with this question after I discovered that there was a built in method for converting a date to its day of the week equivalent. I realized that day of the week must have a tangible effect on power usage.
+
+Answer: We can see that day of the week has a significant impact on power consumption from different appliances. For example, the laundry room is used most heavily on Wednesday and Sunday. The significant gaps in power consumption indicates that the residents of this home do their laundry on a schedule. The kitchen uses the most power on the weekends, most likely due to more people being home or perhaps parties being thrown. The water heater and air conditioner have the least variance by day of the week, with a slight drop off on Sunday and Wednesday. The day of the week that uses the most active power on average is Saturday, using around 1.25 kilowatts per minute. The day of the week that uses the least active power on average is Thursday, using around 0.98 kilowatts per minute. 
+
+The owner of this home would benefit from this analysis because it allows them to have a better idea of which days provide an opportunity to cut down on power usage. It may also help them manage their power draw as to not be drawing too much on any given day. 
+
+I handled missing data by removing NA values in the summarization. This meant that the counts for each day were not exactly equal, but the data set was so large that it had no effect.
+
+```{r}
+library(dplyr)
+custom = Data
+
+#classifying by day of the week
+custom$Date <- weekdays(as.Date(custom$Date))
+
+#summarizing values for each sub meter
+meter1 <- custom %>%
+  group_by(Date) %>%
+  summarise(count = n(), Sub_metering_1 = mean(Sub_metering_1, na.rm = T))
+meter2 <- custom %>%
+  group_by(Date) %>%
+  summarise(count = n(), Sub_metering_2 = mean(Sub_metering_2, na.rm = T))
+meter3 <- custom %>%
+  group_by(Date) %>%
+  summarise(count = n(), Sub_metering_3 = mean(Sub_metering_3, na.rm = T))
+
+#totals by day
+total <- custom %>%
+  group_by(Date) %>%
+  summarise(count = n(), Global_active_power = mean(Global_active_power, na.rm=T)) 
+
+#creating data frame based on summarization
+daysofweek <- c("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday")
+meter1 <- c(0.8323669, 0.7863604, 1.0587722, 0.7995347, 0.8747174, 1.7264726, 1.7955411)
+meter2 <- c(0.8782821, 1.3436162, 1.7343245, 0.7586387, 0.9980408, 1.4922046, 1.8957035)
+meter3 <- c(6.224349, 6.412642, 6.384388, 6.030598, 6.759051, 7.492516, 5.914105)
+
+df1 = data.frame(daysofweek, meter1)
+df2 = data.frame(daysofweek, meter2) 
+df3 = data.frame(daysofweek, meter3) 
+
+ggplot(df1, aes(x = factor(daysofweek, level = c("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday")), y = meter1)) + geom_bar(stat = "identity") + xlab("Day of the Week") + ylab("Average Active Energy (Watt-Hours)") + ggtitle("Sub-meter 1")
+ggplot(df2, aes(x = factor(daysofweek, level = c("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday")), y = meter2)) + geom_bar(stat = "identity") + xlab("Day of the Week") + ylab("Average Active Energy (Watt-Hours)") + ggtitle("Sub-meter 2")
+ggplot(df3, aes(x = factor(daysofweek, level = c("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday")), y = meter3)) + geom_bar(stat = "identity") + xlab("Day of the Week") + ylab("Average Active Energy (Watt-Hours)") + ggtitle("Sub-meter 3")
+
+
+```
+
 ***Tanner's Plot***
 
 Question: How does power consumption change over the course of a day?
