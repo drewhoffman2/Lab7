@@ -23,16 +23,63 @@ Data <- read_delim(file = 'household_power_consumption.txt', delim = ';', na = c
 
 ***Tanner's Plot***
 
+Question: How does power consumption change over the course of a day?
+
+We want to answer this question 
+
+```{r}
+library(stringr)
+
+TimeGAP <- select(Data, "Time", "Global_active_power")
+
+# Early Morning defined as the hours 12:00am-5:59am
+earlyMorning <- filter(TimeGAP, str_detect(Time, "^00") | str_detect(Time, "^01") | str_detect(Time, "^02") | str_detect(Time, "^03") | str_detect(Time, "^04") | str_detect(Time, "^05"))
+
+emAvg <- mean(earlyMorning$Global_active_power, na.rm=T)
+# Avg early morning GAP = 0.503676666504025
+
+# Morning defined as the hours 6:00am-11:59am
+morning <- filter(TimeGAP, str_detect(Time, "^06") | str_detect(Time, "^07") | str_detect(Time, "^08") | str_detect(Time, "^09") | str_detect(Time, "^10") | str_detect(Time, "^11"))
+
+mAvg <- mean(morning$Global_active_power, na.rm=T)
+# Avg morning GAP = 1.2655260979185
+
+# Afternoon defined as the hours 12:00pm-5:59pm (including noon for sake of equal intervals)
+afternoon <- filter(TimeGAP, str_detect(Time, "^12") | str_detect(Time, "^13") | str_detect(Time, "^14") | str_detect(Time, "^15") | str_detect(Time, "^16") | str_detect(Time, "^17"))
+
+aAvg <- mean(afternoon$Global_active_power, na.rm=T)
+# Avg afternoon GAP = 1.07152755760981
+
+# Evening defined as the hours 6:00pm-11:59pm
+evening <- filter(TimeGAP, str_detect(Time, "^18") | str_detect(Time, "^19") | str_detect(Time, "^20") | str_detect(Time, "^21") | str_detect(Time, "^22") | str_detect(Time, "^23"))
+
+eAvg <- mean(evening$Global_active_power, na.rm=T)
+# Avg evening GAP = 1.52531286612387
+```
+```{r}
+library(ggplot2)
+
+TimeFrame = c("12am-5:59am", "6am-11:59am", "12pm-5:59pm", "6pm-11:59pm")
+GAPavg = c(emAvg, mAvg, aAvg, eAvg)
+df = data.frame(TimeFrame, GAPavg)
+
+
+df$TimeFrame <- factor(df$TimeFrame, levels=c("12am-5:59am", "6am-11:59am", "12pm-5:59pm", "6pm-11:59pm"))
+
+ggplot(df, aes(x=TimeFrame, y=GAPavg, fill=TimeFrame)) + geom_col() + ggtitle("Average Power Consumption Throughout the Day") + labs(fill="Time Frame") + ylab("Average Global Active Power (kilowatts)") + theme(axis.title.x=element_blank(), axis.text.x=element_blank(), axis.ticks.x=element_blank())
+```
+
 ***Burke's Plot***
 
 ***David's Plot***
+
 Question: How does energy consumption change throughout the seasons regarding the water heater and air conditioner?
 
-We want to answer this question to see how different seasons could effect somebody's power bill.
+We want to answer this question to see how different seasons could affect somebody's power bill.
 
 Answer: The water heater and air conditioner were used about the same amount in the Spring, Summer, and Fall seasons. In Winter, the weather was colder so the air conditioner was used significantly less. Therefore, the owner of the house would have payed less money on air conditioning in the winter season than the other three seasons.
 
-The house owner benfits from this analysis as it shows them that the air conditioning and water heater are used much less in winter. Hence, if they wanted to reduce their electric bill they might consider using the air conditioning less in the other three seasons.
+The house owner benefits from this analysis as it shows them that the air conditioning and water heater are used much less in winter. Hence, if they wanted to reduce their electric bill they might consider using the air conditioning less in the other three seasons.
 
 ```{r}
 library(lubridate)
@@ -84,7 +131,7 @@ WiSM3 <-
 Season = c("Spring", "Summer", "Fall", "Winter")
 Value = c(3547933, 1948777, 3403153, 3809911)
 
-df = data.frame(season, value)
+df = data.frame(Season, Value)
 head(df)
 
 #Create a pie chart to compare sub metering between seasons
