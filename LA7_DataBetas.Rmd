@@ -232,6 +232,8 @@ ggplot(Data = Bastille_Day) +
 
 ```
 
+I dealt with missing Data by completely removing it from my data set, 2006 had no readings for July 14, so I just did the years 2007-2010 to look at my question. 
 
+I used Geom_smooth to graph my data after manipulating by separating date into substring and filtering it by month and day, July and 14.
 
 
